@@ -16,7 +16,7 @@ Assume we have a big legacy system and one of the parts is withdrawal processing
 - A user can execute a withdrawal request using one of a payment methods
 - A withdrawal can be executed as soon as possible or be scheduled to execute later
 - After the service receives a request it stores a withdrawal object in our DB and sends a request to a payment provider async. Note: for this task we don't care about a transaction completion  
-- We must send notifications regarding withdrawal status (event, email etc)
+- We MUST 100% send notifications regarding any withdrawal status (event, email etc)
 
 #### Steps to proceed:
 
