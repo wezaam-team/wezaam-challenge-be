@@ -1,6 +1,6 @@
 ### Technical challenge (for developers)
 
-Assume we have a big legacy system and one of the parts is withdrawal processing (the process that allows to transfer money from company to employee accounts). Now we have chance to completely rewrite the system, including API change (endpoints, DTOs etc). As a techical challenge we suggest you to take it (NOTE: we are interesting to see a new withdrawal processing). You can do whathever you want following the acceptance criteria:
+Assume we have a big legacy system and one of the parts is withdrawal processing (the process that allows to transfer money from company to employee accounts). Now we have chance to completely rewrite the system, including API change (endpoints, DTOs etc). As a techical challenge we suggest you to take it (NOTE: we are interesting to see a new withdrawal processing only). You can do whathever you want following the acceptance criteria:
 
 - Use any architecture you are comfortable with 
 - Use modern Java or Kotlin
