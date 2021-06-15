@@ -30,8 +30,6 @@ public class WithdrawalService {
     private PaymentMethodRepository paymentMethodRepository;
     @Autowired
     private EventsService eventsService;
-    @Autowired
-    private EmailService emailService;
 
     private final ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -56,18 +54,15 @@ public class WithdrawalService {
                     savedWithdrawal.setTransactionId(transactionId);
                     withdrawalRepository.save(savedWithdrawal);
                     eventsService.send(savedWithdrawal);
-                    emailService.send(savedWithdrawal);
                 } catch (Exception e) {
                     if (e instanceof TransactionException) {
                         savedWithdrawal.setStatus(WithdrawalStatus.FAILED);
                         withdrawalRepository.save(savedWithdrawal);
                         eventsService.send(savedWithdrawal);
-                        emailService.send(savedWithdrawal);
                     } else {
                         savedWithdrawal.setStatus(WithdrawalStatus.INTERNAL_ERROR);
                         withdrawalRepository.save(savedWithdrawal);
                         eventsService.send(savedWithdrawal);
-                        emailService.send(savedWithdrawal);
                     }
                 }
             }
@@ -93,18 +88,15 @@ public class WithdrawalService {
                 withdrawal.setTransactionId(transactionId);
                 withdrawalScheduledRepository.save(withdrawal);
                 eventsService.send(withdrawal);
-                emailService.send(withdrawal);
             } catch (Exception e) {
                 if (e instanceof TransactionException) {
                     withdrawal.setStatus(WithdrawalStatus.FAILED);
                     withdrawalScheduledRepository.save(withdrawal);
                     eventsService.send(withdrawal);
-                    emailService.send(withdrawal);
                 } else {
                     withdrawal.setStatus(WithdrawalStatus.INTERNAL_ERROR);
                     withdrawalScheduledRepository.save(withdrawal);
                     eventsService.send(withdrawal);
-                    emailService.send(withdrawal);
                 }
             }
         }
