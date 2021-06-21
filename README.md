@@ -23,3 +23,65 @@ Assume we have a big legacy system and one of the parts is withdrawal processing
 - Fork the repository (in case you want to refactor the existing solution). Or you can create the project from scratch
 - Implement your nice solution
 - Once complete invite `makcon` and `pbravowezaam` for review
+
+# Solution
+Withdrawal application
+* Division into independent layers trying to follow the DDD methodology and SOLID principles.
+
+* Use of DTO to transport information through the layers.
+
+* A factory for whitdraw objects was created to provide for the creation of new types of Whitdraw objects.
+
+* Creation of specialized services to notify and another to retry failed transactions.
+
+* Test for the suite of services
+
+* Error handler for normal exceptions as well as those of the application.
+
+
+
+Future improvements:
+
+-Using a single entity to persist data
+
+-Better retry policy implementation.
+
+
+
+* How Run this App:
+  - 
+  You will need to first build with Maven; use the below command, please run it from the project folder which contains the pom.xml file.
+     ```
+     mvn package
+     ```
+  To run Profile app from a command line in a Terminal window you can run the java -jar command. This jar is provided where the Profile app was packaged as an executable jar file.
+     ```
+     java -jar target/wezaam-withdrawal-service-qa-1.0.jar
+     ```      
+  Also you can build image using Docker:
+    ```
+  docker build -t fredySanabria/wezaam-withdrawal-service .
+    ```
+  And run the image:
+    ```
+  docker run -p 7070:7070 fredysanabria/wezaam-withdrawal-service
+    ```  
+
+
+
+* Documentation and Endpoints:
+  - 
+![Principal Screen](Assets/Swagger.png)
+
+Now you are be able to see the Swagger documentation about API
+ 
+
+* Technologies:
+  - 
+
++ BackEnd
+  It's a Rest API developed with Java 15 and Kotlin using SpringBoot framework, JPA repository in H2 embedded database.
+  
+  
+    
+             

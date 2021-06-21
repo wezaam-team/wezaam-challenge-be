@@ -110,7 +110,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <jvmTarget>1.8</jvmTarget>
                     <compilerPlugins>
                         <plugin>jpa</plugin>
                     </compilerPlugins>
