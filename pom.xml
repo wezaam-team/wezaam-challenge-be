@@ -11,8 +11,8 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.wezaam.withdrawalEntity</groupId>
-    <artifactId>wezaam-withdrawalEntity-service-qa</artifactId>
+    <groupId>com.wezaam.withdrawal</groupId>
+    <artifactId>wezaam-withdrawal-service-qa</artifactId>
     <version>1.0</version>
 
     <properties>
