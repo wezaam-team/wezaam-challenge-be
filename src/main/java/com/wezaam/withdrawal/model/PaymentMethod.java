@@ -1,46 +1,36 @@
 package com.wezaam.withdrawal.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+
+import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+@Setter()
+@Getter
 @Entity(name = "payment_methods")
 public class PaymentMethod {
-
+    public PaymentMethod(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+    public PaymentMethod(){
+        super();
+    }
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     @ManyToOne
     @JsonIgnore
     private User user;
+    @OneToMany(mappedBy="paymentMethod")
+    @JsonIgnore
+    private List<WithdrawalEntity> withdrawalEntityList;
+    @OneToMany(mappedBy="paymentMethod")
+    @JsonIgnore
+    private List<WithdrawalScheduled> withdrawalScheduledEntityList;
     private String name;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
