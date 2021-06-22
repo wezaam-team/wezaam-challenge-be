@@ -10,13 +10,12 @@ import com.wezaam.withdrawal.repository.WithdrawalScheduledRepository
 import com.wezaam.withdrawal.service.*
 import org.junit.Test
 
-import org.junit.Assert.*
 import org.junit.Before
 import org.mockito.Mockito
 import org.mockito.Mockito.times
 import java.time.Instant
 
-class ProcessSchedulerServiceTest() {
+class RetryServiceTest() {
     private val withdrawalRepository = Mockito.mock(WithdrawalRepository::class.java)
     private val withdrawalScheduleRepository = Mockito.mock(WithdrawalScheduledRepository::class.java)
     private val withdrawalFactory = WithdrawalFactory(withdrawalRepository, withdrawalScheduleRepository)
