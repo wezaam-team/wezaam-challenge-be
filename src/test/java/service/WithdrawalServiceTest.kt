@@ -17,6 +17,7 @@ import org.junit.Test
 
 import org.junit.Assert.*
 import org.mockito.Mockito
+import org.mockito.Mockito.nullable
 import org.mockito.Mockito.times
 import java.time.Instant
 
@@ -82,10 +83,13 @@ class WithdrawalServiceTest {
     fun testThatProcessThrowsException(){
         Mockito.`when`(withdrawalRepository.save(any(WithdrawalEntity::class.java)))
                 .thenThrow(TransactionException("Test message"))
+        Mockito.`when`(withdrawalRepository.save(updatedEntity))
+                .thenReturn(updatedEntity)
         val result = withdrawalService.process(withdrawalInformationDTO)
         assertNotNull(result)
         assertNotNull(result.transactionId)
         assertTrue(result.status == WithdrawalStatus.FAILED)
+        Mockito.verify(notifierService, times(1)).send(any(WithdrawalInformationDTO::class.java))
     }
 
     private fun <T> any(type : Class<T>): T {
