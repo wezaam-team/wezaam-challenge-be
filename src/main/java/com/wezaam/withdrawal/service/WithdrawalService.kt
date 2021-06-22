@@ -24,9 +24,10 @@ class WithdrawalService(val factory:WithdrawalFactory,
      * Get IdTransaction and update status
      */
     fun process(informationDTO: WithdrawalInformationDTO): WithdrawalInformationDTO{
+        var updatedWithdrawal: WithdrawalInformationDTO? = null
         try {
             transactionId = processService.sendToProcessing(informationDTO.amount, informationDTO.paymentMethod)
-            val updatedWithdrawal = create(WithdrawalInformationDTO(
+            updatedWithdrawal = create(WithdrawalInformationDTO(
                     informationDTO.id,
                     transactionId,
                     informationDTO.amount,
@@ -36,22 +37,20 @@ class WithdrawalService(val factory:WithdrawalFactory,
                     informationDTO.paymentMethod,
                     WithdrawalStatus.PROCESSING,
                     informationDTO.type))
-            notifierService.send(updatedWithdrawal)
-            return updatedWithdrawal
+
         } catch (e:Exception) {
-                if (e is TransactionException) {
-                    return create(WithdrawalInformationDTO(
-                            informationDTO.id,
-                            transactionId,
-                            informationDTO.amount,
-                            informationDTO.createdAt,
-                            informationDTO.executeAt,
-                            informationDTO.userId,
-                            informationDTO.paymentMethod,
-                            WithdrawalStatus.FAILED,
-                            informationDTO.type))
-                } else {
-                    return create(WithdrawalInformationDTO(
+            updatedWithdrawal = create(WithdrawalInformationDTO(
+                    informationDTO.id,
+                    transactionId,
+                    informationDTO.amount,
+                    informationDTO.createdAt,
+                    informationDTO.executeAt,
+                    informationDTO.userId,
+                    informationDTO.paymentMethod,
+                    WithdrawalStatus.FAILED,
+                    informationDTO.type))
+                if ((e is TransactionException).not()) {
+                    updatedWithdrawal = create(WithdrawalInformationDTO(
                             informationDTO.id,
                             transactionId,
                             informationDTO.amount,
@@ -62,6 +61,9 @@ class WithdrawalService(val factory:WithdrawalFactory,
                             WithdrawalStatus.INTERNAL_ERROR,
                             informationDTO.type))
                 }
+            } finally {
+            notifierService.send(updatedWithdrawal)
+            return updatedWithdrawal!!
             }
     }
 
