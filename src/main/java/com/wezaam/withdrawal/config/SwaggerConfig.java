@@ -26,7 +26,7 @@ public class SwaggerConfig {
 
     @Bean
     public ApiInfo apiInfo() {
-        return new ApiInfoBuilder().title("Withdrawal service")
+        return new ApiInfoBuilder().title("WithdrawalEntity service")
                 .build();
     }
 }
