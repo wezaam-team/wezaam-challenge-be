@@ -6,7 +6,7 @@ Assume we have a big legacy system and one of the parts is withdrawal processing
 - Use modern Java or Kotlin (we use Kotlin for new code)
 - Use Spring boot
 - Use any database SQL/NoSQL (please use embedded)
-- The code must be tested
+- The code must be tested (we don't expect 100% coverage for this challenge, we want to see that you can write sensible tests)
 - The service should be easy to run (e.q. docker-compose)
 
 #### Here are some business rules of the withdrawal processing:
