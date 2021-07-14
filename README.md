@@ -6,7 +6,7 @@ Assume we have a big legacy system and one of the parts is withdrawal processing
 - Use modern Java or Kotlin (we use Kotlin for new code)
 - Use Spring boot
 - Use any database SQL/NoSQL (please use embedded)
-- The code must be tested (we don't expect 100% coverage for this challenge, we want to see that you can write sensible tests)
+- The code must be tested. We don't expect 100% coverage for this challenge, we want to see that you can write sensible tests. For example, if you have several similar converters, no need to test every single class/method, just enough to test one. But for critical logic like withdrawal process we'd like to see coverage of different scenarios
 - We expect to see SOLID principles in action
 - The service should be easy to run (e.q. docker-compose)
 
