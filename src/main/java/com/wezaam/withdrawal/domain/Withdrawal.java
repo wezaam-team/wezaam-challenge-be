@@ -121,7 +121,11 @@ public class Withdrawal {
     }
 
     public boolean canBeSent() {
-        final boolean isToBeSentImmediately = immediate != null && immediate.booleanValue();
+        final boolean isPendingToBeSent = withdrawalStatus != null
+                && withdrawalStatus.equals(WithdrawalStatus.PENDING);
+
+        final boolean isToBeSentImmediately = immediate != null
+                && immediate.booleanValue();
 
         final boolean isConfiguredToBeSentLater = !isToBeSentImmediately && scheduledFor != null;
         final boolean isToBeSentLaterAndTheTimeHasArrived = isConfiguredToBeSentLater
@@ -129,7 +133,14 @@ public class Withdrawal {
                 .now()
                 .isAfter(scheduledFor);
 
-        return isToBeSentImmediately || isToBeSentLaterAndTheTimeHasArrived;
+        return isPendingToBeSent &&
+                (isToBeSentImmediately || isToBeSentLaterAndTheTimeHasArrived);
+    }
+
+    public boolean canBeClosed() {
+        final boolean isBeingProcessed = withdrawalStatus != null
+                && withdrawalStatus.equals(WithdrawalStatus.PROCESSING);
+        return isBeingProcessed;
     }
 
     private void validateAmount() throws InsufficientAmountException {
@@ -161,13 +172,17 @@ public class Withdrawal {
     }
 
     private void validateSchedule() throws InvalidScheduleException {
-        boolean isNotToBeExecutedImmediately = (immediate == null || !immediate.booleanValue());
+        boolean isNotPending = withdrawalStatus != null
+                && !withdrawalStatus.equals(WithdrawalStatus.PENDING);
+
+        boolean isNotToBeExecutedImmediately = immediate == null
+                || !immediate.booleanValue();
+
         boolean isNotScheduledToBeExecuted = scheduledFor == null;
 
-        if (isNotToBeExecutedImmediately && isNotScheduledToBeExecuted) {
+        if (isNotPending || (isNotToBeExecutedImmediately && isNotScheduledToBeExecuted)) {
             throw new InvalidScheduleException();
         }
     }
-
 
 }

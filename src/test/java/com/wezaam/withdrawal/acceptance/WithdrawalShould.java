@@ -24,10 +24,7 @@ import java.net.URISyntaxException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {Application.class, H2JpaConfig.class, RabbitMQConfig.class},
-        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-        properties = {
-                "spring.main.allow-bean-definition-overriding=true",
-                "test.rabbitMQConfig.enabled=true"}
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
 public class WithdrawalShould {
 
@@ -128,7 +125,7 @@ public class WithdrawalShould {
 
     private void giveTimeForTheWithdrawalToBeProcessed() {
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
         } catch (Exception e) {
         }
     }

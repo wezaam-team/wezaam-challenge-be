@@ -31,7 +31,7 @@ public class WithdrawalEvent {
                 null);
     }
 
-    public WithdrawalEvent(Long id, Long userId, Long paymentMethodId, BigDecimal amount, Boolean immediate, Instant scheduledFor, WithdrawalStatus withdrawalStatus) {
+    protected WithdrawalEvent(Long id, Long userId, Long paymentMethodId, BigDecimal amount, Boolean immediate, Instant scheduledFor, WithdrawalStatus withdrawalStatus) {
         super();
         this.id = id;
         this.userId = userId;

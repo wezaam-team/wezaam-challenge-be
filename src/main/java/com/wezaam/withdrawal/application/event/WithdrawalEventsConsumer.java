@@ -1,28 +1,35 @@
 package com.wezaam.withdrawal.application.event;
 
-import com.wezaam.withdrawal.application.command.ProcessWithdrawalCommandBuilder;
-import com.wezaam.withdrawal.application.command.FinishWithdrawalProcessingCommandBuilder;
+import com.wezaam.withdrawal.application.WithdrawalInvalidatorService;
+import com.wezaam.withdrawal.application.command.FinishWithdrawalProcessingCommandFromDomainConverter;
+import com.wezaam.withdrawal.application.command.ProcessWithdrawalCommandFromDomainConverter;
 import com.wezaam.withdrawal.domain.Withdrawal;
+import com.wezaam.withdrawal.domain.WithdrawalProcessingService;
 import com.wezaam.withdrawal.domain.WithdrawalRepository;
-import com.wezaam.withdrawal.domain.WithdrawalService;
 import com.wezaam.withdrawal.domain.WithdrawalStatus;
-import com.wezaam.withdrawal.domain.event.WithdrawalCreated;
-import com.wezaam.withdrawal.domain.event.WithdrawalProcessed;
+import com.wezaam.withdrawal.domain.event.*;
 import com.wezaam.withdrawal.domain.exception.InvalidPaymentMethodException;
 import com.wezaam.withdrawal.domain.exception.UserDoesNotExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.logging.Logger;
 
 @Service
 public class WithdrawalEventsConsumer {
 
+    private static final Logger LOGGER =
+            Logger.getLogger(WithdrawalEventsConsumer.class.getSimpleName());
+
     @Autowired
-    private WithdrawalService withdrawalService;
+    private WithdrawalProcessingService withdrawalProcessingService;
 
     @Autowired
     private WithdrawalRepository withdrawalRepository;
+
+    @Autowired
+    private WithdrawalInvalidatorService withdrawalInvalidatorService;
 
     public void withdrawalCreated(WithdrawalCreated withdrawalCreated) {
         withdrawalRepository
@@ -42,51 +49,55 @@ public class WithdrawalEventsConsumer {
                 );
     }
 
+    public void withdrawalClosed(WithdrawalClosed withdrawalClosed) {
+        LOGGER.info(
+                String.format(
+                        "Withdrawal #%d was closed!",
+                        withdrawalClosed.getId()
+                )
+        );
+    }
+
+    public void withdrawalInvalidated(WithdrawalInvalidated withdrawalInvalidated) {
+        LOGGER.info(
+                String.format(
+                        "Withdrawal #%d was invalidated!",
+                        withdrawalInvalidated.getId()
+                )
+        );
+    }
+
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     private void sendWithdrawalToProcess(Withdrawal withdrawal) {
         try {
-            withdrawalService.processWithdrawal(
-                    ProcessWithdrawalCommandBuilder
-                            .aProcessWithdrawalCommandBuilder()
-                            .withId(withdrawal.getId())
-                            .withScheduledFor(withdrawal.getScheduledFor())
-                            .withAmount(withdrawal.getAmount())
-                            .withImmediate(withdrawal.getImmediate())
-                            .withWithdrawalStatus(withdrawal.getWithdrawalStatus())
-                            .withUserId(withdrawal.getUser().getId())
-                            .withPaymentMethodId(withdrawal.getPaymentMethod().getId())
-                            .build()
+            withdrawalProcessingService.processWithdrawal(
+                    ProcessWithdrawalCommandFromDomainConverter
+                            .aProcessWithdrawalCommandConverter()
+                            .apply(withdrawal)
             );
         } catch (InvalidPaymentMethodException | UserDoesNotExistsException e) {
-            withdrawal.setWithdrawalStatus(WithdrawalStatus.FAILED);
-            withdrawalRepository.save(withdrawal);
+            withdrawalInvalidatorService
+                    .invalidateWithdrawalWithStatus(withdrawal, WithdrawalStatus.FAILED);
         } catch (Exception e) {
-            withdrawal.setWithdrawalStatus(WithdrawalStatus.INTERNAL_ERROR);
-            withdrawalRepository.save(withdrawal);
+            withdrawalInvalidatorService
+                    .invalidateWithdrawalWithStatus(withdrawal, WithdrawalStatus.INTERNAL_ERROR);
         }
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     private void finishWithdrawalProcessing(Withdrawal withdrawal) {
         try {
-            withdrawalService.finishWithdrawalProcessing(
-                    FinishWithdrawalProcessingCommandBuilder
-                            .aFinishWithdrawalProcessingCommandBuilder()
-                            .withId(withdrawal.getId())
-                            .withScheduledFor(withdrawal.getScheduledFor())
-                            .withAmount(withdrawal.getAmount())
-                            .withImmediate(withdrawal.getImmediate())
-                            .withWithdrawalStatus(withdrawal.getWithdrawalStatus())
-                            .withUserId(withdrawal.getUser().getId())
-                            .withPaymentMethodId(withdrawal.getPaymentMethod().getId())
-                            .build()
+            withdrawalProcessingService.finishWithdrawalProcessing(
+                    FinishWithdrawalProcessingCommandFromDomainConverter
+                            .aFinishWithdrawalProcessingCommandFromDomainConverter()
+                            .apply(withdrawal)
             );
         } catch (InvalidPaymentMethodException | UserDoesNotExistsException e) {
-            withdrawal.setWithdrawalStatus(WithdrawalStatus.FAILED);
-            withdrawalRepository.save(withdrawal);
+            withdrawalInvalidatorService
+                    .invalidateWithdrawalWithStatus(withdrawal, WithdrawalStatus.FAILED);
         } catch (Exception e) {
-            withdrawal.setWithdrawalStatus(WithdrawalStatus.INTERNAL_ERROR);
-            withdrawalRepository.save(withdrawal);
+            withdrawalInvalidatorService
+                    .invalidateWithdrawalWithStatus(withdrawal, WithdrawalStatus.INTERNAL_ERROR);
         }
     }
 }

@@ -5,6 +5,15 @@ import com.wezaam.withdrawal.domain.Withdrawal;
 import java.util.function.Function;
 
 public class WithdrawalCreatedConverter implements Function<Withdrawal, WithdrawalCreated> {
+
+    private WithdrawalCreatedConverter() {
+        super();
+    }
+
+    public static WithdrawalCreatedConverter aWithdrawalCreatedConverter() {
+        return new WithdrawalCreatedConverter();
+    }
+
     @Override
     public WithdrawalCreated apply(Withdrawal withdrawal) {
         return WithdrawalCreatedBuilder

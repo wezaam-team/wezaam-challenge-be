@@ -15,7 +15,8 @@ public class CreateWithdrawalCommandBuilder {
     private WithdrawalStatus withdrawalStatus;
 
     public static CreateWithdrawalCommandBuilder aCreateWithdrawalCommandBuilder() {
-        return new CreateWithdrawalCommandBuilder();
+        return new CreateWithdrawalCommandBuilder()
+                .withWithdrawalStatus(WithdrawalStatus.PENDING);
     }
 
     public CreateWithdrawalCommandBuilder withId(Long id) {

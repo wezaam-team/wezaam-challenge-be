@@ -6,11 +6,18 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 public class WithdrawalCreated extends WithdrawalEvent {
+
     public WithdrawalCreated() {
-        super();
+        this(null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
     }
 
-    public WithdrawalCreated(Long id, Long userId, Long paymentMethodId, BigDecimal amount, Boolean immediate, Instant scheduledFor, WithdrawalStatus withdrawalStatus) {
+    protected WithdrawalCreated(Long id, Long userId, Long paymentMethodId, BigDecimal amount, Boolean immediate, Instant scheduledFor, WithdrawalStatus withdrawalStatus) {
         super(id, userId, paymentMethodId, amount, immediate, scheduledFor, withdrawalStatus);
     }
 }

@@ -17,6 +17,10 @@ public class RabbitMQConfig {
 
     public static final String WITHDRAWAL_PROCESSED_QUEUE = "withdrawalProcessedQueue";
 
+    public static final String WITHDRAWAL_CLOSED_QUEUE = "withdrawalClosedQueue";
+
+    public static final String WITHDRAWAL_INVALIDATE_QUEUE = "withdrawalInvalidatedQueue";
+
     @Bean
     public RabbitTemplate jsonRabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
@@ -37,6 +41,16 @@ public class RabbitMQConfig {
     @Bean
     public Queue withdrawalProcessedQueue() {
         return new Queue(WITHDRAWAL_PROCESSED_QUEUE);
+    }
+
+    @Bean
+    public Queue withdrawalClosedQueue() {
+        return new Queue(WITHDRAWAL_CLOSED_QUEUE);
+    }
+
+    @Bean
+    public Queue withdrawalInvalidatedQueue() {
+        return new Queue(WITHDRAWAL_INVALIDATE_QUEUE);
     }
 
     @Bean

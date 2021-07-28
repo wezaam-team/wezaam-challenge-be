@@ -4,19 +4,20 @@ import com.wezaam.withdrawal.domain.Withdrawal;
 
 import java.util.function.Function;
 
-public class WithdrawalProcessedConverter implements Function<Withdrawal, WithdrawalProcessed> {
-    private WithdrawalProcessedConverter() {
+public class WithdrawalClosedConverter implements Function<Withdrawal, WithdrawalClosed> {
+
+    private WithdrawalClosedConverter() {
         super();
     }
 
-    public static WithdrawalProcessedConverter aWithdrawalProcessedConverter() {
-        return new WithdrawalProcessedConverter();
+    public static WithdrawalClosedConverter aWithdrawalClosedConverter() {
+        return new WithdrawalClosedConverter();
     }
 
     @Override
-    public WithdrawalProcessed apply(Withdrawal withdrawal) {
-        return WithdrawalProcessedBuilder
-                .aWithdrawalProcessedBuilder()
+    public WithdrawalClosed apply(Withdrawal withdrawal) {
+        return WithdrawalClosedBuilder
+                .aWithdrawalClosedBuilder()
                 .withAmount(withdrawal.getAmount())
                 .withUserId(withdrawal.getUser().getId())
                 .withId(withdrawal.getId())
@@ -27,3 +28,4 @@ public class WithdrawalProcessedConverter implements Function<Withdrawal, Withdr
                 .build();
     }
 }
+

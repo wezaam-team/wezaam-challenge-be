@@ -157,6 +157,57 @@ public class WithdrawalShould {
         assertEquals(Boolean.FALSE, withdrawal.canBeSent());
     }
 
+    @Test
+    public void notBeCreatedWithStatusDifferentThanPending() {
+        final BigDecimal availableAmount = BigDecimal.valueOf(10);
+
+        final User user = givenUserWithAmount(availableAmount);
+        final Withdrawal withdrawal = WithdrawalBuilder.aWithdrawalBuilder()
+                .withUser(user)
+                .withPaymentMethod(user.getPaymentMethods().get(0))
+                .withAmount(availableAmount)
+                .withScheduledFor(Instant.now())
+                .withWithdrawalStatus(WithdrawalStatus.FAILED)
+                .build();
+
+        assertThrows(InvalidScheduleException.class, () -> {
+            withdrawal.validate();
+        });
+    }
+
+
+    @Test
+    public void notBeProcessedWithStatusDifferentThanPending() {
+        final BigDecimal availableAmount = BigDecimal.valueOf(10);
+
+        final User user = givenUserWithAmount(availableAmount);
+        final Withdrawal withdrawal = WithdrawalBuilder.aWithdrawalBuilder()
+                .withUser(user)
+                .withPaymentMethod(user.getPaymentMethods().get(0))
+                .withAmount(availableAmount)
+                .withScheduledFor(Instant.now().minus(1, ChronoUnit.MINUTES))
+                .withWithdrawalStatus(WithdrawalStatus.PROCESSING)
+                .build();
+
+        assertEquals(Boolean.FALSE, withdrawal.canBeSent());
+    }
+
+    @Test
+    public void notBeClosedWithStatusDifferentThanPending() {
+        final BigDecimal availableAmount = BigDecimal.valueOf(10);
+
+        final User user = givenUserWithAmount(availableAmount);
+        final Withdrawal withdrawal = WithdrawalBuilder.aWithdrawalBuilder()
+                .withUser(user)
+                .withPaymentMethod(user.getPaymentMethods().get(0))
+                .withAmount(availableAmount)
+                .withScheduledFor(Instant.now().minus(1, ChronoUnit.MINUTES))
+                .withWithdrawalStatus(WithdrawalStatus.FAILED)
+                .build();
+
+        assertEquals(Boolean.FALSE, withdrawal.canBeClosed());
+    }
+
     private User givenUserWithAmount(BigDecimal availableAmount) {
         final PaymentMethod paymentMethod = getPaymentMethod(availableAmount);
 

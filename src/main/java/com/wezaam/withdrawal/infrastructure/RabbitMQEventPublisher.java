@@ -1,9 +1,7 @@
 package com.wezaam.withdrawal.infrastructure;
 
 import com.wezaam.withdrawal.application.event.EventPublisher;
-import com.wezaam.withdrawal.domain.event.WithdrawalCreated;
-import com.wezaam.withdrawal.domain.event.WithdrawalEvent;
-import com.wezaam.withdrawal.domain.event.WithdrawalProcessed;
+import com.wezaam.withdrawal.domain.event.*;
 import com.wezaam.withdrawal.infrastructure.config.RabbitMQConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,11 @@ public class RabbitMQEventPublisher implements EventPublisher {
     static {
         MESSAGE_QUEUE_FOR_EVENT_TYPE.put(WithdrawalCreated.class, RabbitMQConfig.WITHDRAWAL_CREATED_QUEUE);
         MESSAGE_QUEUE_FOR_EVENT_TYPE.put(WithdrawalProcessed.class, RabbitMQConfig.WITHDRAWAL_PROCESSED_QUEUE);
+        MESSAGE_QUEUE_FOR_EVENT_TYPE.put(WithdrawalClosed.class, RabbitMQConfig.WITHDRAWAL_CLOSED_QUEUE);
+        MESSAGE_QUEUE_FOR_EVENT_TYPE.put(WithdrawalInvalidated.class, RabbitMQConfig.WITHDRAWAL_INVALIDATE_QUEUE);
+    }
+
+    public RabbitMQEventPublisher() {
     }
 
     @Autowired

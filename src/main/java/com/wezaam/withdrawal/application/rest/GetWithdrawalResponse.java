@@ -23,6 +23,16 @@ public class GetWithdrawalResponse {
 
     private WithdrawalStatus withdrawalStatus;
 
+    protected GetWithdrawalResponse(Long id, Long userId, Long paymentMethodId, BigDecimal amount, Boolean immediate, Instant scheduledFor, WithdrawalStatus withdrawalStatus) {
+        this.id = id;
+        this.userId = userId;
+        this.paymentMethodId = paymentMethodId;
+        this.amount = amount;
+        this.immediate = immediate;
+        this.scheduledFor = scheduledFor;
+        this.withdrawalStatus = withdrawalStatus;
+    }
+
     public Long getId() {
         return id;
     }

@@ -5,8 +5,8 @@ import com.wezaam.withdrawal.domain.WithdrawalStatus;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public class WithdrawalProcessed extends WithdrawalEvent {
-    public WithdrawalProcessed() {
+public class WithdrawalInvalidated extends WithdrawalEvent {
+    public WithdrawalInvalidated() {
         this(null,
                 null,
                 null,
@@ -16,7 +16,7 @@ public class WithdrawalProcessed extends WithdrawalEvent {
                 null);
     }
 
-    protected WithdrawalProcessed(Long id, Long userId, Long paymentMethodId, BigDecimal amount, Boolean immediate, Instant scheduledFor, WithdrawalStatus withdrawalStatus) {
+    protected WithdrawalInvalidated(Long id, Long userId, Long paymentMethodId, BigDecimal amount, Boolean immediate, Instant scheduledFor, WithdrawalStatus withdrawalStatus) {
         super(id, userId, paymentMethodId, amount, immediate, scheduledFor, withdrawalStatus);
     }
 }
