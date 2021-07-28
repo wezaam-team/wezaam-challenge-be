@@ -1,4 +1,4 @@
-package com.wezaam.withdrawal.integration.domain;
+package com.wezaam.withdrawal.integration;
 
 import java.math.BigDecimal;
 
@@ -11,14 +11,14 @@ public enum MockedWithdrawal {
     ),
 
     UNAVAILABLE(
-            2L,
-            2L,
+            100L,
+            100L,
             BigDecimal.valueOf(1100, 2)
     );
 
-    Long userId;
-    Long paymentId;
-    BigDecimal amount;
+    public Long userId;
+    public Long paymentId;
+    public BigDecimal amount;
 
     MockedWithdrawal(Long userId, Long paymentId, BigDecimal amount) {
         this.userId = userId;

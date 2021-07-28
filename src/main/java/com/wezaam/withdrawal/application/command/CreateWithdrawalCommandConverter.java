@@ -1,6 +1,6 @@
 package com.wezaam.withdrawal.application.command;
 
-import com.wezaam.withdrawal.application.rest.CreateWithdrawalRequest;
+import com.wezaam.withdrawal.application.rest.dto.CreateWithdrawalRequest;
 
 import java.util.function.Function;
 

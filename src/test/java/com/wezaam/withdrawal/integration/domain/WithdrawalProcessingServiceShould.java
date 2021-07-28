@@ -6,6 +6,7 @@ import com.wezaam.withdrawal.application.command.ProcessWithdrawalCommand;
 import com.wezaam.withdrawal.application.command.ProcessWithdrawalCommandBuilder;
 import com.wezaam.withdrawal.config.infrastructure.H2JpaConfig;
 import com.wezaam.withdrawal.domain.*;
+import com.wezaam.withdrawal.integration.MockedWithdrawal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,6 +1,14 @@
 package com.wezaam.withdrawal.domain.event;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.wezaam.withdrawal.domain.WithdrawalStatus;
+import com.wezaam.withdrawal.infrastructure.config.DefaultInstantDeserializer;
+import com.wezaam.withdrawal.infrastructure.config.DefaultInstantSerializer;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -17,6 +25,8 @@ public class WithdrawalEvent {
 
     private Boolean immediate;
 
+    @JsonDeserialize(using = DefaultInstantDeserializer.class)
+    @JsonSerialize(using = DefaultInstantSerializer.class)
     private Instant scheduledFor;
 
     private WithdrawalStatus withdrawalStatus;

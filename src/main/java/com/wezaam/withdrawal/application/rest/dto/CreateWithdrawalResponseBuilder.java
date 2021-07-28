@@ -1,4 +1,4 @@
-package com.wezaam.withdrawal.application.rest;
+package com.wezaam.withdrawal.application.rest.dto;
 
 import com.wezaam.withdrawal.domain.WithdrawalStatus;
 

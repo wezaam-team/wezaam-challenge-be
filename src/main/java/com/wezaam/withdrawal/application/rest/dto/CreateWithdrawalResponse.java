@@ -1,4 +1,4 @@
-package com.wezaam.withdrawal.application.rest;
+package com.wezaam.withdrawal.application.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.wezaam.withdrawal.domain.WithdrawalStatus;
@@ -6,7 +6,7 @@ import com.wezaam.withdrawal.domain.WithdrawalStatus;
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public class GetWithdrawalResponse {
+public class CreateWithdrawalResponse {
 
     Long id;
 
@@ -23,7 +23,7 @@ public class GetWithdrawalResponse {
 
     private WithdrawalStatus withdrawalStatus;
 
-    protected GetWithdrawalResponse(Long id, Long userId, Long paymentMethodId, BigDecimal amount, Boolean immediate, Instant scheduledFor, WithdrawalStatus withdrawalStatus) {
+    protected CreateWithdrawalResponse(Long id, Long userId, Long paymentMethodId, BigDecimal amount, Boolean immediate, Instant scheduledFor, WithdrawalStatus withdrawalStatus) {
         this.id = id;
         this.userId = userId;
         this.paymentMethodId = paymentMethodId;

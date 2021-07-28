@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = {Application.class, H2JpaConfig.class, RabbitMQConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
 )
-public class WithdrawalShould {
+public class WithdrawalProcessShould {
 
     @LocalServerPort
     private int port;
@@ -35,13 +35,13 @@ public class WithdrawalShould {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void acceptsASAPWithdrawGivenUserWithOnePaymentMethod() throws URISyntaxException, JSONException {
-        final JSONObject createdWithdrawal = whenUserExecutesWithdrawalASAP();
+    public void successfullyProcessAImmediateWithdrawalFromAUserWithAPayment() throws URISyntaxException, JSONException {
+        final JSONObject createdWithdrawal = whenUserCreatesAImmediateWithdrawal();
         thenWithdrawalIsStoredAndSentToProvider(createdWithdrawal);
         andWithdrawalIsSuccessfullyProcessed((Integer) createdWithdrawal.get("id"));
     }
 
-    private JSONObject whenUserExecutesWithdrawalASAP() throws URISyntaxException, JSONException {
+    private JSONObject whenUserCreatesAImmediateWithdrawal() throws URISyntaxException, JSONException {
         final long userId = 1L;
         final long paymentMethodId = 1L;
         final BigDecimal withdrawalAmount = BigDecimal.valueOf(50, 2);
@@ -57,7 +57,7 @@ public class WithdrawalShould {
 
         final HttpEntity<String> createWithdrawalResponse = restTemplate
                 .postForEntity(
-                        getEndpointURIFor("withdrawals"),
+                        EndpointResolver.aEndpointResolverFor(port).getEndpointURIFor("withdrawals"),
                         getRequestFor(withdrawalRequestBody),
                         String.class
                 );
@@ -87,8 +87,10 @@ public class WithdrawalShould {
 
         final HttpEntity<String> getWithdrawalResponse = restTemplate
                 .getForEntity(
-                        getEndpointURIFor(
-                                String.format("withdrawals/%d", expectedWithdrawal.get("id"))),
+                        EndpointResolver.
+                                aEndpointResolverFor(port)
+                                .getEndpointURIFor(
+                                        String.format("withdrawals/%d", expectedWithdrawal.get("id"))),
                         String.class
                 );
 
@@ -108,7 +110,7 @@ public class WithdrawalShould {
 
         final HttpEntity<String> getWithdrawalResponse = restTemplate
                 .getForEntity(
-                        getEndpointURIFor(
+                        EndpointResolver.aEndpointResolverFor(port).getEndpointURIFor(
                                 String.format("withdrawals/%d", withdrawalId)),
                         String.class
                 );
@@ -128,15 +130,6 @@ public class WithdrawalShould {
             Thread.sleep(1000);
         } catch (Exception e) {
         }
-    }
-
-    private URI getEndpointURIFor(String endpointUrl) throws URISyntaxException {
-        return new URI(getEndpointUrlFor(endpointUrl));
-    }
-
-    private String getEndpointUrlFor(String endpoint) {
-        final String baseEndpointUrl = "http://localhost:%d/%s";
-        return String.format(baseEndpointUrl, port, endpoint);
     }
 
     private static void assertWithdrawals(JSONObject expected, JSONObject actual) {

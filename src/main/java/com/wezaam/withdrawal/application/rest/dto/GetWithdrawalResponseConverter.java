@@ -1,23 +1,22 @@
-package com.wezaam.withdrawal.application.rest;
+package com.wezaam.withdrawal.application.rest.dto;
 
 import com.wezaam.withdrawal.domain.Withdrawal;
 
 import java.util.function.Function;
 
-public class CreateWithdrawalResponseConverter implements Function<Withdrawal, CreateWithdrawalResponse> {
+public class GetWithdrawalResponseConverter implements Function<Withdrawal, GetWithdrawalResponse> {
 
-    private CreateWithdrawalResponseConverter() {
+    private GetWithdrawalResponseConverter() {
         super();
     }
 
-    public static CreateWithdrawalResponseConverter aCreateWithdrawalResponseConverter() {
-        return new CreateWithdrawalResponseConverter();
+    public static GetWithdrawalResponseConverter aGetWithdrawalResponseConverter() {
+        return new GetWithdrawalResponseConverter();
     }
 
     @Override
-    public CreateWithdrawalResponse apply(Withdrawal withdrawal) {
-        return CreateWithdrawalResponseBuilder
-                .aCreateWithdrawalResponseBuilder()
+    public GetWithdrawalResponse apply(Withdrawal withdrawal) {
+        return GetWithdrawalResponseBuilder.aGetWithdrawalResponseBuilder()
                 .withId(withdrawal.getId())
                 .withPaymentMethodId(withdrawal.getUser().getId())
                 .withUserId(withdrawal.getPaymentMethod().getId())

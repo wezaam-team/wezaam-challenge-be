@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface WithdrawalRepository extends JpaRepository<Withdrawal, Long> {
 
-    List<Withdrawal> findAllByScheduledForBefore(Instant date);
+    List<Withdrawal> findAllByScheduledForBeforeAndWithdrawalStatus(Instant date, WithdrawalStatus withdrawalStatus);
 }

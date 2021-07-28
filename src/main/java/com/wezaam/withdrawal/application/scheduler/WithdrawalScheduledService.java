@@ -8,14 +8,19 @@ import com.wezaam.withdrawal.domain.WithdrawalRepository;
 import com.wezaam.withdrawal.domain.WithdrawalStatus;
 import com.wezaam.withdrawal.domain.exception.InvalidPaymentMethodException;
 import com.wezaam.withdrawal.domain.exception.UserDoesNotExistsException;
+import com.wezaam.withdrawal.infrastructure.config.SchedulerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.logging.Logger;
 
 @Service
 public class WithdrawalScheduledService {
+
+    private static final Logger LOGGER =
+            Logger.getLogger(WithdrawalScheduledService.class.getSimpleName());
 
     @Autowired
     private WithdrawalProcessingService withdrawalProcessingService;
@@ -26,16 +31,25 @@ public class WithdrawalScheduledService {
     @Autowired
     private WithdrawalInvalidatorService withdrawalInvalidatorService;
 
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = SchedulerConfig.DELAY_BETWEEN_EXECUTIONS)
     public void run() {
+        LOGGER.info("Running scheduled execution to search for scheduled withdrawals.");
+
         withdrawalRepository
-                .findAllByScheduledForBefore(Instant.now())
+                .findAllByScheduledForBeforeAndWithdrawalStatus(Instant.now(), WithdrawalStatus.PENDING)
                 .parallelStream()
                 .forEach(this::run);
     }
 
     private void run(Withdrawal withdrawal) {
         try {
+            LOGGER.info(
+                    String.format(
+                            "Withdrawal #%d reached the schedule time for its execution. Processing it!",
+                            withdrawal.getId()
+                    )
+            );
+
             withdrawalProcessingService.processWithdrawal(
                     ProcessWithdrawalCommandFromDomainConverter
                             .aProcessWithdrawalCommandConverter()

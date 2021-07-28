@@ -1,6 +1,8 @@
 package com.wezaam.withdrawal.acceptance.dto.converter;
 
 import com.wezaam.withdrawal.acceptance.dto.Withdrawal;
+import com.wezaam.withdrawal.acceptance.dto.converter.withdrawal.JSONObjectToWithdrawalConverter;
+import com.wezaam.withdrawal.acceptance.dto.converter.withdrawal.WithdrawalToJSONObjectConverter;
 import org.json.JSONObject;
 
 public class WithdrawalConverter implements Converter<Withdrawal, JSONObject> {

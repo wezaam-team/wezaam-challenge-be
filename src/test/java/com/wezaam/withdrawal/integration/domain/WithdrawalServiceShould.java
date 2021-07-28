@@ -11,6 +11,7 @@ import com.wezaam.withdrawal.domain.WithdrawalStatus;
 import com.wezaam.withdrawal.domain.exception.InsufficientAmountException;
 import com.wezaam.withdrawal.domain.exception.InvalidPaymentMethodException;
 import com.wezaam.withdrawal.domain.exception.UserDoesNotExistsException;
+import com.wezaam.withdrawal.integration.MockedWithdrawal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
