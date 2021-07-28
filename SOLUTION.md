@@ -8,6 +8,8 @@
 
 ## How to run it
 
+- mvn clean install
+- docker-compose up -d
 - Run RabbitMQ:
     docker run --rm -it --hostname demo-tutorial-rabbit -p 15672:15672 -p 5672:5672 --net mynet rabbitmq:3-management
 
@@ -18,5 +20,4 @@
 - To actually implement CQSR
 - To actually discuss about the business in order to come up with a new model
 - To create a docker compose to glue everything together
-**docker build -t wezaam/withdrawal .
-**docker run -p 8080:8080 --net mynet wezaam/withdrawal
+-- I'm still configurung maven plugin and the docker-compose

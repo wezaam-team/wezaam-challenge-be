@@ -3,6 +3,7 @@ package com.wezaam.withdrawal.application.rest;
 import com.wezaam.withdrawal.application.rest.dto.GetUserResponseConverter;
 import com.wezaam.withdrawal.application.rest.dto.GetUsersResponse;
 import com.wezaam.withdrawal.domain.UserService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.stream.Collectors;
 
+@Api
 @RestController
 @RequestMapping("/users")
 public class UserController {

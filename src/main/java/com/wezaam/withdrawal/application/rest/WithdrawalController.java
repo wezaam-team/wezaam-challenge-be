@@ -8,6 +8,7 @@ import com.wezaam.withdrawal.domain.exception.InsufficientAmountException;
 import com.wezaam.withdrawal.domain.exception.InvalidPaymentMethodException;
 import com.wezaam.withdrawal.domain.exception.InvalidScheduleException;
 import com.wezaam.withdrawal.domain.exception.UserDoesNotExistsException;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.Optional;
 
+@Api
 @RestController
 @RequestMapping("/withdrawals")
 public class WithdrawalController {

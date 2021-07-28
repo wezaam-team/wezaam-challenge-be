@@ -1,0 +1,15 @@
+rabbitmq:
+  image: rabbitmq:management
+  ports:
+    - "5672:5672" #JMS Port
+    - "15672:15672" #Management Port - default user:pass = guest:guest
+
+wezaam-challenge-be:
+  image: com.wezaam.withdrawal/wezaam-challenge-be
+  ports:
+    #  local : container expose
+    - "8083:8080"
+  links:
+    - rabbitmq
+  environment:
+    RABBIT_HOST: rabbitmq
