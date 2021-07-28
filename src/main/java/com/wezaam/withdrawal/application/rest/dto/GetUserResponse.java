@@ -14,4 +14,28 @@ public class GetUserResponse {
         this.name = name;
         this.paymentIds = paymentIds;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Long> getPaymentIds() {
+        return paymentIds;
+    }
+
+    public void setPaymentIds(List<Long> paymentIds) {
+        this.paymentIds = paymentIds;
+    }
 }

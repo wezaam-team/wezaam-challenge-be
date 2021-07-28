@@ -8,12 +8,14 @@
 
 ## How to run it
 
-- mvn clean install
-- docker-compose up -d
-- Run RabbitMQ:
-    docker run --rm -it --hostname demo-tutorial-rabbit -p 15672:15672 -p 5672:5672 --net mynet rabbitmq:3-management
+- I'm trying to put it inside a docker, put it's not working, it could be something on my local, because I have a Windows installation, you could try:
+-- mvn clean install
+-- docker-compose up -d
 
-- Run the application by executing its jar
+- Otherwise, this should work
+-- Run RabbitMQ:
+---    docker run --rm -it --hostname demo-tutorial-rabbit -p 15672:15672 -p 5672:5672 --net mynet rabbitmq:3-management
+-- Run the application by executing its jar
 
 ## Next steps
 

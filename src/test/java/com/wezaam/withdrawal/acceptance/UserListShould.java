@@ -1,6 +1,10 @@
 package com.wezaam.withdrawal.acceptance;
 
 import com.wezaam.withdrawal.Application;
+import com.wezaam.withdrawal.acceptance.dto.User;
+import com.wezaam.withdrawal.acceptance.dto.Users;
+import com.wezaam.withdrawal.acceptance.dto.converter.JSONConverter;
+import com.wezaam.withdrawal.acceptance.dto.converter.UsersConverter;
 import com.wezaam.withdrawal.config.infrastructure.H2JpaConfig;
 import com.wezaam.withdrawal.infrastructure.config.RabbitMQConfig;
 import org.json.JSONException;
@@ -13,9 +17,9 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 
 import java.net.URISyntaxException;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {Application.class, H2JpaConfig.class, RabbitMQConfig.class},
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -50,5 +54,12 @@ public class UserListShould {
     }
 
     private void thenAllUsersAreDsiplayed(JSONObject getUsersResponse) {
+        List<User> users = new UsersConverter().to(getUsersResponse)
+                .getUsers();
+
+        assertEquals(3, users.size());
+        assertEquals("User 1", users.get(0).getName());
+        assertEquals("User 2", users.get(1).getName());
+        assertEquals("User 3", users.get(2).getName());
     }
 }
