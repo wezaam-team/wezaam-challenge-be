@@ -1,23 +1,22 @@
 package com.wezaam.withdrawal.model;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.Instant;
 
-import static javax.persistence.GenerationType.IDENTITY;
+import static javax.persistence.GenerationType.TABLE;
 
 @Entity(name = "withdrawals")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Withdrawal {
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = TABLE)
     private Long id;
     private Long transactionId;
-    private Double amount;
+    private BigDecimal amount;
     private Instant createdAt;
+    private Instant sentAt;
     private Long userId;
     private Long paymentMethodId;
     @Enumerated(EnumType.STRING)
@@ -31,11 +30,11 @@ public class Withdrawal {
         this.id = id;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -69,6 +68,14 @@ public class Withdrawal {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Instant getSentAt() {
+        return sentAt;
+    }
+
+    public void setSentAt(Instant sentAt) {
+        this.sentAt = sentAt;
     }
 
     public void setTransactionId(Long transactionId) {
