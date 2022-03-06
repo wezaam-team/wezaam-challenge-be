@@ -7,20 +7,20 @@ To implemente this challenge, I have decided to create the project from scratch.
 - weezam-withdrawal: Microservice responsible for implementing the logic in order to support the withdrawal processing.
 - weezam-notifications: Microservice responsible for processing the notifications from withdrawal processing.
 
-Each of them has been implemented using a [Hexagonal architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)). I am using the following package structure:
+Each of them have been implemented using a [Hexagonal architecture](https://en.wikipedia.org/wiki/Hexagonal_architecture_(software)) with the following package structure:
 - domain:
-  - model: It contains Model class
-  - aggregate: It contains the business services
+  - model: It contains Model classes
+  - aggregate: It contains the business service classes
   - repository: It contains Repository interfaces
 - adapter:
   - in
-    - amqp: It contains Message Broker Listener
-    - rest: It contains Rest API
+    - amqp: It contains Message Broker Listener classes
+    - rest: It contains Rest API classes
   - out
-    - amqp: It contains Message broker publisher
-    - persistence: It contains Repository implementation
-    - client: It contains Rest clients 
-- Config: It contains spring config class.
+    - amqp: It contains Message broker publisher classes
+    - persistence: It contains Repository implementation classes
+    - client: It contains Rest clients classes
+- Config: It contains spring config classes.
 
 Also, I have prepared a docker-compose file in order to run all the modules together.
 
@@ -56,4 +56,4 @@ docker-compose up --build
 
 ## Testing
 
-Since, I have not had enough time. I have just included some test cases in weezam-user module. I apologies for that.
+I have only included some test cases in the weezam-user module. I apologise for that.
