@@ -15,8 +15,7 @@ spring:
       - id: userModule
         uri: lb://WEEZAM-USER
         predicates:
-        - Path=/users/**
-        - Path=/payments/**
+          - Path=/users/**
       - id: withdrawalModule
         uri: lb://WEEZAM-WITHDRAWAL
         predicates:
