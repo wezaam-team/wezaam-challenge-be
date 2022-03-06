@@ -19,7 +19,7 @@ public class DefaultPaymentMethodAggregate implements PaymentMethodAggregate {
     @Override
     public PaymentMethod findOne(final Long id) throws PaymentMethodNotFoundException, InvalidCriteriaException {
         if (Objects.isNull(id)) {
-            throw new InvalidCriteriaException(String.format("PaymentMethod not found for criteria: '%d'", id));
+            throw new InvalidCriteriaException("PaymentMethod not found. Null criteria");
         }
         return paymentMethodRepository.findOne(id).orElseThrow(() -> new PaymentMethodNotFoundException(String.format("PaymentMethod not found for criteria: '%d'", id)));
     }

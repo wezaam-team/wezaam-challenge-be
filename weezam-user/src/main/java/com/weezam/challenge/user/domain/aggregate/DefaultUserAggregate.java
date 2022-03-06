@@ -27,7 +27,7 @@ public class DefaultUserAggregate implements UserAggregate {
     @Override
     public User findOne(final Long id) throws UserNotFoundException, InvalidCriteriaException {
         if (Objects.isNull(id)) {
-            throw new InvalidCriteriaException(String.format("User not found for criteria: '%d'", id));
+            throw new InvalidCriteriaException("User not found. Null criteria");
         }
         return userRepository.findOne(id).orElseThrow(() -> new UserNotFoundException(String.format("User not found for criteria: '%d'", id)));
     }

@@ -4,11 +4,16 @@ import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 public class WithdrawalCreatedQueueConfig {
 
     public static final String NEW_WITHDRAWAL_QUEUE = "weezand.withdrawal.queue.created";
     public static final String NEW_WITHDRAWAL_EXCHANGE = "weezand.withdrawal.exchange.created";
+    public static final String NEW_WITHDRAWAL_EXCHANGE_DELAYED = NEW_WITHDRAWAL_EXCHANGE + ".delayed";
+
 
     public static final String QUEUE_DLX = NEW_WITHDRAWAL_QUEUE + ".dlx";
     public static final String EXCHANGE_DLX = NEW_WITHDRAWAL_EXCHANGE + ".dlx";
@@ -56,6 +61,26 @@ public class WithdrawalCreatedQueueConfig {
     @Bean
     DirectExchange newWithdrawalExchange() {
         return new DirectExchange(NEW_WITHDRAWAL_EXCHANGE);
+    }
+
+    @Bean
+    CustomExchange newWithdrawalExchangeDelayed() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-delayed-type", "direct");
+        return new CustomExchange(NEW_WITHDRAWAL_EXCHANGE_DELAYED, "x-delayed-message", true, false, args);
+
+    }
+
+    /**
+     *Bind order delay plug-in queue to switch
+     */
+    @Bean
+    public Binding newWithdrawalExchangeDelayedBinding() {
+        return BindingBuilder
+                .bind(newWithdrawalMessagesQueue())
+                .to(newWithdrawalExchangeDelayed())
+                .with(NEW_WITHDRAWAL_QUEUE)
+                .noargs();
     }
 
     @Bean
