@@ -1,0 +1,93 @@
+version: '3.2'
+
+services:
+  rabbit:
+    image: heidiks/rabbitmq-delayed-message-exchange:latest
+    container_name: weezam-rabbit
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - weezam-net
+
+  weezam-registry:
+    container_name: weezam-registry
+    build:
+      context: weezam-registry
+      dockerfile: Dockerfile
+    ports:
+      - 8761:8761
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    networks:
+      - weezam-net
+
+  weezam-gateway:
+    container_name: weezam-gateway
+    build:
+      context: weezam-gateway
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    networks:
+      - weezam-net
+
+  weezam-user:
+    container_name: weezam-user
+    build:
+      context: weezam-user
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    networks:
+      - weezam-net
+
+  weezam-withdrawal:
+    container_name: weezam-withdrawal
+    build:
+      context: weezam-withdrawal
+      dockerfile: Dockerfile
+    ports:
+      - 8082:8082
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    networks:
+      - weezam-net
+
+  weezam-notificatons:
+    container_name: weezam-notificatons
+    build:
+      context: weezam-notificatons
+      dockerfile: Dockerfile
+    ports:
+      - 8083:8083
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    networks:
+      - weezam-net
+
+networks:
+  weezam-net:
+    driver: bridge
