@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        ddl-auto: create
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+provider:
+  api:
+    baseUrl: "http://localhost:9090"
+    path: validation
+
+notification:
+  aws:
+    email: "faisanes.sesena@gmail.com"
+    credentials:
+      accessKey: xxxxxxxxx
+      secretKey: xxxxxxxxx
+scheduler:
+  retry-notification-cron: '0 0/5 * * * ?' # every 5 minute
+  execute-scheduled-cron: '0 0 0 * * ?' # every day at 00:00:00
+
+
