@@ -1,10 +1,12 @@
 package com.wezaam.withdrawal.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -15,8 +17,11 @@ public class User {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private String firstName;
+
+    @Cascade(CascadeType.DELETE)
+    @JsonManagedReference
     @OneToMany(mappedBy="user")
-    private List<PaymentMethod> paymentMethods;
+    private Set<UserPaymentMethod> userPaymentMethods;
     private Double maxWithdrawalAmount;
 
     public Long getId() {
@@ -35,12 +40,12 @@ public class User {
         this.firstName = firstName;
     }
 
-    public List<PaymentMethod> getPaymentMethods() {
-        return paymentMethods;
+    public Set<UserPaymentMethod> getUserPaymentMethods() {
+        return userPaymentMethods;
     }
 
-    public void setPaymentMethods(List<PaymentMethod> paymentMethods) {
-        this.paymentMethods = paymentMethods;
+    public void setUserPaymentMethods(Set<UserPaymentMethod> userPaymentMethods) {
+        this.userPaymentMethods = userPaymentMethods;
     }
 
     public Double getMaxWithdrawalAmount() {

@@ -1,11 +1,12 @@
 package com.wezaam.withdrawal.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
+
+import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -15,9 +16,11 @@ public class PaymentMethod {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    @ManyToOne
-    @JsonIgnore
-    private User user;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "paymentMethod")
+    private Set<UserPaymentMethod> userPaymentMethodList;
+
     private String name;
 
     public Long getId() {
@@ -28,12 +31,12 @@ public class PaymentMethod {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public Set<UserPaymentMethod> getUserPaymentMethodList() {
+        return userPaymentMethodList;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserPaymentMethodList(Set<UserPaymentMethod> userPaymentMethodList) {
+        this.userPaymentMethodList = userPaymentMethodList;
     }
 
     public String getName() {
