@@ -27,6 +27,12 @@ public class PaymentMethodController {
         return new ResponseEntity<PaymentMethod>(payment, HttpStatus.OK);
     }
 
+    @GetMapping("/find-payment-method-by-id/{id}")
+    public ResponseEntity<PaymentMethod> findByUserName(@PathVariable Long id) throws Exception {
+        PaymentMethod payment = paymentService.findById(id);
+        return new ResponseEntity<PaymentMethod>(payment, HttpStatus.OK);
+    }
+
     @PostMapping("/add-payment-methods")
     public List<PaymentMethod> addPaymentMethods(@RequestBody List<PaymentMethod> paymentMehods) {
         return paymentService.addPaymentMethods(paymentMehods);

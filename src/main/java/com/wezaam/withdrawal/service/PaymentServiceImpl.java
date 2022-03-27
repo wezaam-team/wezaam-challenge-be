@@ -24,6 +24,13 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    public PaymentMethod findById(Long id) throws Exception {
+        Optional<PaymentMethod> paymentMethod = paymentMethodRepository.findById(id);
+        if (!paymentMethod.isPresent()) throw new PaymentMethodNotFoundException("Payment method not found in the system");
+        return paymentMethod.get();
+    }
+
+    @Override
     public List<PaymentMethod> addPaymentMethods(List<PaymentMethod> paymentMethods) {
         return paymentMethodRepository.saveAll(paymentMethods);
     }

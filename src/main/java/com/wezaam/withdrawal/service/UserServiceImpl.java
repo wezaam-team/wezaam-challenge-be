@@ -20,13 +20,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addUser(User user) {
-
         User entityUser = userRepository.save(user);
-
-        //if (!user.getUserPaymentMethods().isEmpty()) {
-        //    user.getUserPaymentMethods().forEach(p -> p.setUser(entityUser));
-        //    paymentService.addPaymentMethods(user.getPaymentMethods());
-        //}
         return entityUser;
     }
 

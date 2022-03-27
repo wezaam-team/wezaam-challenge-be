@@ -17,8 +17,9 @@ public class PaymentMethod {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @JsonManagedReference
+    //@JsonManagedReference
     @OneToMany(mappedBy = "paymentMethod")
+    @JsonIgnore
     private Set<UserPaymentMethod> userPaymentMethodList;
 
     private String name;

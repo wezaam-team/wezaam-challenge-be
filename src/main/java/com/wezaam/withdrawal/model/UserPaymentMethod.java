@@ -9,7 +9,6 @@ import javax.persistence.*;
 public class UserPaymentMethod {
 
     @EmbeddedId
-    @JsonIgnore
     UserPaymentMethodKey id;
 
     @JsonBackReference

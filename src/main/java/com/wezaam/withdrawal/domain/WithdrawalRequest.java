@@ -1,7 +1,6 @@
-package com.wezaam.withdrawal.domain.rest.request;
+package com.wezaam.withdrawal.domain;
 
 import com.google.common.base.MoreObjects;
-import com.wezaam.withdrawal.model.WithdrawalExecution;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -22,7 +21,7 @@ public class    WithdrawalRequest implements Serializable {
     @NotEmpty(message = "The user name is missing")
     private String name;
 
-    private Instant executedAt;
+    private String executedAt;
 
     public Double getAmount() {
         return amount;
@@ -48,11 +47,11 @@ public class    WithdrawalRequest implements Serializable {
         this.name = name;
     }
 
-    public Instant getExecutedAt() {
+    public String getExecutedAt() {
         return executedAt;
     }
 
-    public void setExecutedAt(Instant executedAt) {
+    public void setExecutedAt(String executedAt) {
         this.executedAt = executedAt;
     }
 

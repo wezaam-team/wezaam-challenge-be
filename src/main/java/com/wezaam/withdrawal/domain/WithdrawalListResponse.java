@@ -1,4 +1,4 @@
-package com.wezaam.withdrawal.domain.rest.request;
+package com.wezaam.withdrawal.domain;
 
 import com.wezaam.withdrawal.model.Withdrawal;
 import com.wezaam.withdrawal.model.WithdrawalScheduled;

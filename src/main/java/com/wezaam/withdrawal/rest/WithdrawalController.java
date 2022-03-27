@@ -1,19 +1,13 @@
 package com.wezaam.withdrawal.rest;
 
-import com.wezaam.withdrawal.domain.rest.request.WithdrawalListResponse;
-import com.wezaam.withdrawal.domain.rest.request.WithdrawalRequest;
-import com.wezaam.withdrawal.exception.PaymentMethodNotFoundException;
-import com.wezaam.withdrawal.exception.UserNotFoundException;
+import com.wezaam.withdrawal.domain.WithdrawalListResponse;
+import com.wezaam.withdrawal.domain.WithdrawalRequest;
 import com.wezaam.withdrawal.model.*;
-import com.wezaam.withdrawal.repository.PaymentMethodRepository;
-import com.wezaam.withdrawal.repository.WithdrawalRepository;
-import com.wezaam.withdrawal.repository.WithdrawalScheduledRepository;
 import com.wezaam.withdrawal.service.PaymentService;
 import com.wezaam.withdrawal.service.UserService;
 import com.wezaam.withdrawal.service.WithdrawalService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,10 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Api
 @RestController
@@ -41,6 +35,8 @@ public class WithdrawalController {
 
     @Autowired
     private WithdrawalService withdrawalService;
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @PostMapping("/create-withdrawal")
     public ResponseEntity<Withdrawal> createWithdrawal(@RequestBody WithdrawalRequest request) {
@@ -62,7 +58,8 @@ public class WithdrawalController {
             return new ResponseEntity(withdrawal, HttpStatus.OK);
 
         } catch (Exception e) {
-            return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
+            e.printStackTrace();
+            return new ResponseEntity(request, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -72,6 +69,8 @@ public class WithdrawalController {
         User user = null;
         PaymentMethod paymentMethod = null;
 
+        try {
+
             user = userService.findByName(request.getName());
             paymentMethod = paymentService.findByName(request.getPaymentMethod());
 
@@ -80,12 +79,16 @@ public class WithdrawalController {
             withdrawalScheduled.setPaymentMethodId(paymentMethod.getId());
             withdrawalScheduled.setAmount(request.getAmount());
             withdrawalScheduled.setCreatedAt(Instant.now());
-            withdrawalScheduled.setExecuteAt(request.getExecutedAt());
+            withdrawalScheduled.setExecuteAt(LocalDateTime.parse(request.getExecutedAt(), formatter).atZone(ZoneId.systemDefault()).toInstant());
             withdrawalScheduled.setStatus(WithdrawalStatus.PENDING);
             withdrawalService.schedule(withdrawalScheduled);
 
             return new ResponseEntity(withdrawalScheduled, HttpStatus.OK);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity(request, HttpStatus.NOT_FOUND);
+        }
 
     }
 

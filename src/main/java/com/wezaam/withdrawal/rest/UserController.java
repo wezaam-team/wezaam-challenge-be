@@ -1,5 +1,6 @@
 package com.wezaam.withdrawal.rest;
 
+import com.wezaam.withdrawal.exception.UserNotFoundException;
 import com.wezaam.withdrawal.model.User;
 import com.wezaam.withdrawal.repository.UserRepository;
 import com.wezaam.withdrawal.service.UserService;
@@ -24,14 +25,24 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
-    private ApplicationContext context;
-
-    @Autowired
     private UserService userService;
 
     @GetMapping("/find-all-users")
     public List<User> findAll() {
         return userService.findAllUsers();
+    }
+
+    @GetMapping("/find-user-by-name/{name}")
+    public ResponseEntity<User> findByName(@PathVariable String name) {
+
+        try {
+            User user = userService.findByName(name);
+            return new ResponseEntity<User>(user, HttpStatus.OK);
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/find-user-by-id/{id}")
