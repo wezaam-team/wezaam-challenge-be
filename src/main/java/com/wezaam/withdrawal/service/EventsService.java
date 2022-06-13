@@ -1,20 +1,23 @@
 package com.wezaam.withdrawal.service;
 
+import com.wezaam.withdrawal.model.AbstractWithdrawal;
 import com.wezaam.withdrawal.model.Withdrawal;
 import com.wezaam.withdrawal.model.WithdrawalScheduled;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 
-@Service
-public class EventsService {
+public interface EventsService {
 
     @Async
-    public void send(Withdrawal withdrawal) {
-        // build and send an event in message queue async
-    }
+    @Retryable(value = RuntimeException.class, backoff = @Backoff(value = 100L))
+    void send(Withdrawal withdrawal);
 
     @Async
-    public void send(WithdrawalScheduled withdrawal) {
-        // build and send an event in message queue async
-    }
+    void send(WithdrawalScheduled withdrawal);
+
+    @Recover
+    void recover(RuntimeException e, AbstractWithdrawal withdrawal);
+
 }
