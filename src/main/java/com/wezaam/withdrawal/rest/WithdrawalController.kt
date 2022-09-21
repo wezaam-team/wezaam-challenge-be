@@ -3,7 +3,7 @@ package com.wezaam.withdrawal.rest
 import com.wezaam.withdrawal.dto.CreateWithdrawalRequest
 import com.wezaam.withdrawal.exception.BadRequestException
 import com.wezaam.withdrawal.exception.NotFoundException
-import com.wezaam.withdrawal.service.WithdrawalManager
+import com.wezaam.withdrawal.service.manager.WithdrawalManager
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,7 +26,6 @@ class WithdrawalController(private val withdrawalManager: WithdrawalManager) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
         }
     }
-
 
     @GetMapping("/find-all-withdrawals")
     fun findAll() = ResponseEntity.ok(withdrawalManager.findAllWithdrawals())

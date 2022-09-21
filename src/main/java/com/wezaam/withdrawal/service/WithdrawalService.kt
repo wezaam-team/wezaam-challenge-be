@@ -1,5 +1,6 @@
 package com.wezaam.withdrawal.service
 
-interface WithdrawalService {
-    fun findAll(): MutableList<Any>
+interface WithdrawalService<Withdrawal> {
+    fun create(withdrawal: Withdrawal) : Withdrawal
+    fun findAll(): List<Withdrawal>
 }

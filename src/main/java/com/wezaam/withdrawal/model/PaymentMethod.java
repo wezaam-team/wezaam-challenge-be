@@ -11,7 +11,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity(name = "payment_methods")
 public class PaymentMethod {
-
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;

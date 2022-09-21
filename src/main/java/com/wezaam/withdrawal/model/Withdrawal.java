@@ -1,15 +1,15 @@
 package com.wezaam.withdrawal.model;
 
-import javax.persistence.Entity;
+import java.time.Instant;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.time.Instant;
+import javax.persistence.MappedSuperclass;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-@Entity(name = "withdrawals")
+@MappedSuperclass
 public class Withdrawal {
 
     @Id
@@ -77,5 +77,18 @@ public class Withdrawal {
 
     public Long getTransactionId() {
         return transactionId;
+    }
+
+    @Override
+    public String toString() {
+        return "Withdrawal{" +
+                "id=" + id +
+                ", transactionId=" + transactionId +
+                ", amount=" + amount +
+                ", createdAt=" + createdAt +
+                ", userId=" + userId +
+                ", paymentMethodId=" + paymentMethodId +
+                ", status=" + status +
+                '}';
     }
 }
