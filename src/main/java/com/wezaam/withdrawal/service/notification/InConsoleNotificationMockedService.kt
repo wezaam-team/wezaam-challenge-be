@@ -23,7 +23,7 @@ class InConsoleNotificationMockedService(private val failedNotificationCache: Fa
             println("--------------- Provider Failure for withdrawal: $withdrawal")
             val key = StringGenerator.generate(keyLength)
             failedNotificationCache.set(key, withdrawal)
-            println("--------------- Saving withdrawal in cache -> key:  $key")
+            println("--------------- Saving withdrawal in cache -> key:  $key withdrawal: $withdrawal")
         }
     }
 
@@ -31,7 +31,7 @@ class InConsoleNotificationMockedService(private val failedNotificationCache: Fa
     override fun resend(key: String, withdrawal: Withdrawal) {
         try {
             if (mockedNotificationResendFailure) throw ProviderException("The Notification Could not be delivered")
-            println("--------------- Resent Notifying status: ${withdrawal.status} of the withdrawal: $withdrawal")
+            println("--------------- Resent key -> $key Notifying status: ${withdrawal.status} of the withdrawal: $withdrawal")
             failedNotificationCache.remove(key)
         } catch (e: ProviderException) {
             println("The Notification Could not be delivered")

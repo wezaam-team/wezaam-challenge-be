@@ -20,16 +20,17 @@ class WithdrawalAsapService(
 
     override fun create(withdrawal: WithdrawalAsap): WithdrawalAsap {
         val savedWithdrawal = withdrawalRepository.save(withdrawal)
+        notificationService.send(savedWithdrawal)
 
         paymentMethodService.findById(savedWithdrawal.paymentMethodId).orElse(null)?.let {
             executorService.submit {
                 processRequestStatus.process(savedWithdrawal, it)
                 withdrawalRepository.save(savedWithdrawal)
-                notificationService.send(savedWithdrawal)
             }
         }
         return savedWithdrawal
     }
 
     override fun findAll(): List<WithdrawalAsap> = withdrawalRepository.findAll()
+
 }

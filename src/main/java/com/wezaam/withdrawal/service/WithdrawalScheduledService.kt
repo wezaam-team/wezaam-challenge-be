@@ -14,15 +14,19 @@ class WithdrawalScheduledService(
     private val notificationService: NotificationService,
     private val withdrawalScheduledRepository: WithdrawalScheduledRepository,
     private val processRequestStatus: ProcessRequestStatus,
-) : WithdrawalService<WithdrawalScheduled>{
-    override fun create(withdrawal: WithdrawalScheduled) = withdrawalScheduledRepository.save(withdrawal)
+) : WithdrawalService<WithdrawalScheduled> {
+    override fun create(withdrawal: WithdrawalScheduled): WithdrawalScheduled {
+        val save = withdrawalScheduledRepository.save(withdrawal)
+        notificationService.send(withdrawal)
+        return save
+    }
+
     override fun findAll(): List<WithdrawalScheduled> = withdrawalScheduledRepository.findAll()
 
     fun process(withdrawal: WithdrawalScheduled) {
         paymentMethodService.findById(withdrawal.paymentMethodId).orElse(null)?.let {
             processRequestStatus.process(withdrawal, it)
             withdrawalScheduledRepository.save(withdrawal)
-            notificationService.send(withdrawal)
         }
     }
 
