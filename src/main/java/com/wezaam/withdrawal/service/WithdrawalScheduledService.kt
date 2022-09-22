@@ -1,10 +1,12 @@
 package com.wezaam.withdrawal.service
 
+import com.wezaam.withdrawal.exception.TransactionException
 import com.wezaam.withdrawal.model.WithdrawalScheduled
+import com.wezaam.withdrawal.model.WithdrawalStatus
 import com.wezaam.withdrawal.repository.WithdrawalScheduledRepository
 import com.wezaam.withdrawal.service.notification.NotificationService
 import com.wezaam.withdrawal.service.payment.PaymentMethodService
-import com.wezaam.withdrawal.service.status.ProcessRequestStatus
+import com.wezaam.withdrawal.service.provider.WithdrawalProviderRequestService
 import java.time.Instant
 import org.springframework.stereotype.Service
 
@@ -13,7 +15,7 @@ class WithdrawalScheduledService(
     private val paymentMethodService: PaymentMethodService,
     private val notificationService: NotificationService,
     private val withdrawalScheduledRepository: WithdrawalScheduledRepository,
-    private val processRequestStatus: ProcessRequestStatus,
+    private val withdrawalProviderRequestService: WithdrawalProviderRequestService,
 ) : WithdrawalService<WithdrawalScheduled> {
     override fun create(withdrawal: WithdrawalScheduled): WithdrawalScheduled {
         val save = withdrawalScheduledRepository.save(withdrawal)
@@ -25,10 +27,25 @@ class WithdrawalScheduledService(
 
     fun process(withdrawal: WithdrawalScheduled) {
         paymentMethodService.findById(withdrawal.paymentMethodId).orElse(null)?.let {
-            processRequestStatus.process(withdrawal, it)
-            withdrawalScheduledRepository.save(withdrawal)
+            try {
+                withdrawal.status = WithdrawalStatus.PROCESSING
+                notifyStatus(withdrawal)
+                withdrawal.transactionId = withdrawalProviderRequestService.sendToProcessing(withdrawal.amount, it)
+                withdrawal.status = WithdrawalStatus.SUCCESS
+            } catch (e: TransactionException) {
+                withdrawal.status = WithdrawalStatus.FAILED
+            } catch (e: Exception) {
+                withdrawal.status = WithdrawalStatus.INTERNAL_ERROR
+            } finally {
+                notifyStatus(withdrawal)
+            }
         }
     }
 
     fun findAllByExecuteAtBefore(instant: Instant): MutableList<WithdrawalScheduled> = withdrawalScheduledRepository.findAllByExecuteAtBefore(instant)
+
+    private fun notifyStatus(withdrawal: WithdrawalScheduled) {
+        notificationService.send(withdrawal)
+        withdrawalScheduledRepository.save(withdrawal)
+    }
 }

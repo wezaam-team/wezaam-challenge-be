@@ -14,6 +14,7 @@ class InConsoleNotificationMockedService(private val failedNotificationCache: Fa
     val mockedNotificationResendFailure = false
     val keyLength = 10
 
+    //TODO apply separately for scheduled and asap with an interface
     @Async
     override fun send(withdrawal: Withdrawal) {
         try {
@@ -22,9 +23,23 @@ class InConsoleNotificationMockedService(private val failedNotificationCache: Fa
         } catch (e: ProviderException) {
             println("--------------- Provider Failure for withdrawal: $withdrawal")
             val key = StringGenerator.generate(keyLength)
-            failedNotificationCache.set(key, withdrawal)
+
+            failedNotificationCache.set(key, clone(withdrawal))
             println("--------------- Saving withdrawal in cache -> key:  $key withdrawal: $withdrawal")
         }
+    }
+
+    //TODO this not here
+    private fun clone(withdrawal: Withdrawal): Withdrawal {
+        val withdrawalSave = Withdrawal()
+        withdrawalSave.id = withdrawal.id
+        withdrawalSave.amount = withdrawal.amount
+        withdrawalSave.status = withdrawal.status
+        withdrawalSave.paymentMethodId = withdrawal.paymentMethodId
+        withdrawalSave.createdAt = withdrawal.createdAt
+        withdrawalSave.transactionId = withdrawal.transactionId
+        withdrawalSave.userId = withdrawal.userId
+        return withdrawalSave
     }
 
     @Async
