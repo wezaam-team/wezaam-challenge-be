@@ -1,0 +1,1 @@
+CREATE SEQUENCE `withdrawal_seq` START WITH 1;
