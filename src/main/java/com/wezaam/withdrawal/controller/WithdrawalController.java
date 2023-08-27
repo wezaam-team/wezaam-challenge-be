@@ -3,13 +3,11 @@ package com.wezaam.withdrawal.controller;
 import com.wezaam.withdrawal.model.Withdrawal;
 import com.wezaam.withdrawal.model.WithdrawalScheduled;
 import com.wezaam.withdrawal.model.WithdrawalStatus;
-import com.wezaam.withdrawal.repository.PaymentMethodRepository;
-import com.wezaam.withdrawal.repository.WithdrawalRepository;
-import com.wezaam.withdrawal.repository.WithdrawalScheduledRepository;
+import com.wezaam.withdrawal.service.PaymentMethodService;
+import com.wezaam.withdrawal.service.UserService;
 import com.wezaam.withdrawal.service.WithdrawalService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +24,11 @@ import java.util.List;
 public class WithdrawalController {
 
     @Autowired
-    private ApplicationContext context;
+    private UserService userService;
     @Autowired
-    private UserController userController;
+    private PaymentMethodService paymentMethodService;
+    @Autowired
+    private WithdrawalService withdrawalService;
 
     @PostMapping("/create-withdrawals")
     public ResponseEntity create(HttpServletRequest request) {
@@ -40,15 +40,16 @@ public class WithdrawalController {
             return new ResponseEntity("Required params are missing", HttpStatus.BAD_REQUEST);
         }
         try {
-            userController.findById(Long.parseLong(userId));
+            userService.findById(Long.parseLong(userId));
         } catch (Exception e) {
             return new ResponseEntity("User not found", HttpStatus.NOT_FOUND);
         }
-        if (!context.getBean(PaymentMethodRepository.class).findById(Long.parseLong(paymentMethodId)).isPresent()) {
+        try {
+            paymentMethodService.findById(Long.parseLong(paymentMethodId));
+        } catch (Exception e) {
             return new ResponseEntity("Payment method not found", HttpStatus.NOT_FOUND);
         }
 
-        WithdrawalService withdrawalService = context.getBean(WithdrawalService.class);
         Object body;
         if (executeAt.equals("ASAP")) {
             Withdrawal withdrawal = new Withdrawal();
@@ -76,8 +77,8 @@ public class WithdrawalController {
 
     @GetMapping("/find-all-withdrawals")
     public ResponseEntity findAll() {
-        List<Withdrawal> withdrawals = context.getBean(WithdrawalRepository.class).findAll();
-        List<WithdrawalScheduled> withdrawalsScheduled = context.getBean(WithdrawalScheduledRepository.class).findAll();
+        List<Withdrawal> withdrawals = withdrawalService.findAllWithdrawals();
+        List<WithdrawalScheduled> withdrawalsScheduled = withdrawalService.findAllWithdrawalsScheduled();
         List<Object> result = new ArrayList<>();
         result.addAll(withdrawals);
         result.addAll(withdrawalsScheduled);

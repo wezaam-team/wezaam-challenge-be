@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -100,5 +101,12 @@ public class WithdrawalService {
                 }
             }
         }
+    }
+    public List<Withdrawal> findAllWithdrawals() {
+        return withdrawalRepository.findAll();
+    }
+
+    public List<WithdrawalScheduled> findAllWithdrawalsScheduled() {
+        return withdrawalScheduledRepository.findAll();
     }
 }
