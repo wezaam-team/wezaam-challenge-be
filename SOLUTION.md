@@ -1,7 +1,8 @@
 
+##Swagger UI
+Available at: http://<host>:<port>/swagger-ui/
 
-
-Testing
+##Testing
 Not aiming for full coverage of test cases within one test class but more for a full coverage of all classes.
 
 1. JUnit testing to cover simple success scenarios. 

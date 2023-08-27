@@ -1,35 +1,24 @@
 package com.wezaam.withdrawal.model;
 
+import com.wezaam.withdrawal.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import java.time.Instant;
 
-import static javax.persistence.GenerationType.IDENTITY;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name = "scheduled_withdrawals")
-public class WithdrawalScheduled {
-
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long id;
-    private Long transactionId;
-    private Double amount;
-    private Instant createdAt;
+public class WithdrawalScheduled extends Withdrawal {
+    @Getter
+    @Setter
     private Instant executeAt;
-    private Long userId;
-    private Long paymentMethodId;
-    @Enumerated(EnumType.STRING)
-    private WithdrawalStatus status;
+
+    public void setExecuteAt(String executeAt) {
+        this.executeAt = Utils.parseStringTimeToInstant(executeAt);
+    }
 }

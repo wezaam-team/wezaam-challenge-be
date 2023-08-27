@@ -4,19 +4,20 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @AllArgsConstructor
 public class WithdrawalScheduledDto {
 
+	@NotNull
 	private Long userId;
+	@NotNull
 	private Long paymentMethodId;
+	@NotNull
 	private Double amount;
-	private Instant executeAt;
+	@NotNull
+	private String executeAt;
 
-	public void setExecuteAt (String value) {
-		this.executeAt = value.equals("ASAP") ? Instant.now() : null;
-	}
 }
