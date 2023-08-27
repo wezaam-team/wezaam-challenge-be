@@ -1,4 +1,4 @@
-package com.wezaam.withdrawal.rest;
+package com.wezaam.withdrawal.controller;
 
 import com.wezaam.withdrawal.model.User;
 import com.wezaam.withdrawal.repository.UserRepository;
