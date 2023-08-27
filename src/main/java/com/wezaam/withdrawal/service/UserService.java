@@ -14,10 +14,10 @@ public class UserService {
 	private UserRepository userRepository;
 
 	public User findById(Long id) {
-		return null;
+		return userRepository.findById(id).orElseThrow();
 	}
 
 	public List<User> findAll(){
-		return null;
+		return userRepository.findAll();
 	}
 }
