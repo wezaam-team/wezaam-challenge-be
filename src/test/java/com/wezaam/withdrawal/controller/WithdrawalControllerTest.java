@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.wezaam.withdrawal.model.dto.WithdrawalScheduledDto;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,18 +26,22 @@ class WithdrawalControllerTest {
 
 	private WithdrawalScheduledDto withdrawalSchedule = new WithdrawalScheduledDto(1L, 1L, 50.0, "ASAP");
 
+	private static ObjectMapper objectMapper;
+
+	@BeforeAll
+	static void initObjectMapper () {
+		objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+	}
+
 	@Test
 	void createWithValidParams() throws Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModule(new JavaTimeModule());
 		this.mockMvc.perform(post("/create-withdrawals").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(withdrawalSchedule))).andDo(print()).andExpect(status().isOk());
 	}
 
 	@Test
 	void createWithInvalidParams() throws Exception {
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.registerModule(new JavaTimeModule());
 		withdrawalSchedule.setAmount(null);
 		this.mockMvc.perform(post("/create-withdrawals").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(withdrawalSchedule))).andDo(print()).andExpect(status().is(400));

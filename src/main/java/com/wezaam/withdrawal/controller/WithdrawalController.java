@@ -1,12 +1,10 @@
 package com.wezaam.withdrawal.controller;
 
-import com.wezaam.withdrawal.model.InstantWithdrawal;
+import com.wezaam.withdrawal.model.WithdrawalInstant;
 import com.wezaam.withdrawal.model.Withdrawal;
 import com.wezaam.withdrawal.model.WithdrawalScheduled;
 import com.wezaam.withdrawal.model.WithdrawalStatus;
 import com.wezaam.withdrawal.model.dto.WithdrawalScheduledDto;
-import com.wezaam.withdrawal.service.PaymentMethodService;
-import com.wezaam.withdrawal.service.UserService;
 import com.wezaam.withdrawal.service.WithdrawalService;
 import io.swagger.annotations.Api;
 import org.modelmapper.ModelMapper;
@@ -26,46 +24,39 @@ import java.util.List;
 public class WithdrawalController {
 
     @Autowired
-    private UserService userService;
-    @Autowired
-    private PaymentMethodService paymentMethodService;
-    @Autowired
     private WithdrawalService withdrawalService;
     @Autowired
     private ModelMapper modelMapper;
 
     @PostMapping("/create-withdrawals")
-    //@ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity create(@Valid @RequestBody WithdrawalScheduledDto withdrawalScheduledDto) throws ParseException {
         Withdrawal withdrawal = convertToEntity(withdrawalScheduledDto);
-        if(!withdrawalService.isValidWithdrawalUser(withdrawal.getUserId())){
-            return new ResponseEntity("User not found", HttpStatus.NOT_FOUND);
+        try {
+            withdrawalService.handleWithdrawal(withdrawal);
+        } catch (Exception e){
+            return new ResponseEntity(e.getMessage(), HttpStatus.NOT_FOUND);
         }
-        if(!withdrawalService.isValidWithdrawalPaymentMethod(withdrawal.getPaymentMethodId())) {
-            return new ResponseEntity("Payment method not found", HttpStatus.NOT_FOUND);
-        }
-        withdrawalService.handleWithdrawal(withdrawal);
-
+        //not converting back to a DTO - do not see any sensitive data in it and don't know the full requirements
         return new ResponseEntity(withdrawal, HttpStatus.OK);
     }
 
     @GetMapping("/find-all-withdrawals")
     public ResponseEntity findAll() {
-        List<InstantWithdrawal> instantWithdrawals = withdrawalService.findAllWithdrawals();
+        List<WithdrawalInstant> withdrawalInstants = withdrawalService.findAllWithdrawals();
         List<WithdrawalScheduled> withdrawalsScheduled = withdrawalService.findAllWithdrawalsScheduled();
         List<Object> result = new ArrayList<>();
-        result.addAll(instantWithdrawals);
+        result.addAll(withdrawalInstants);
         result.addAll(withdrawalsScheduled);
-
+        //not converting back to a DTO - do not see any sensitive data in it and don't know the full requirements
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
     private Withdrawal convertToEntity(WithdrawalScheduledDto withdrawalScheduledDto) throws ParseException {
         if(withdrawalScheduledDto.getExecuteAt().equals("ASAP")) {
-            InstantWithdrawal instantWithdrawal = modelMapper.map(withdrawalScheduledDto, InstantWithdrawal.class);
-            instantWithdrawal.setCreatedAt(Instant.now());
-            instantWithdrawal.setStatus(WithdrawalStatus.PENDING);
-            return instantWithdrawal;
+            WithdrawalInstant withdrawalInstant = modelMapper.map(withdrawalScheduledDto, WithdrawalInstant.class);
+            withdrawalInstant.setCreatedAt(Instant.now());
+            withdrawalInstant.setStatus(WithdrawalStatus.PENDING);
+            return withdrawalInstant;
         } else {
             WithdrawalScheduled withdrawalScheduled = modelMapper.map(withdrawalScheduledDto, WithdrawalScheduled.class);
             withdrawalScheduled.setCreatedAt(Instant.now());
