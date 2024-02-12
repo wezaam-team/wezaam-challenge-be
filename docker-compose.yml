@@ -1,0 +1,121 @@
+version: '3.2'
+
+services:
+  rabbit:
+    image: heidiks/rabbitmq-delayed-message-exchange:latest
+    container_name: weezam-rabbit
+    hostname: weezam-rabbit
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - weezam-net
+
+  weezam-registry:
+    container_name: weezam-registry
+    hostname: weezam-registry
+    build:
+      context: weezam-registry
+      dockerfile: Dockerfile
+    ports:
+      - 8761:8761
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    networks:
+      - weezam-net
+
+  weezam-gateway:
+    container_name: weezam-gateway
+    hostname: weezam-gateway
+    build:
+      context: weezam-gateway
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    links:
+      - weezam-registry
+      - weezam-user
+      - weezam-withdrawal
+    depends_on:
+      - weezam-registry
+    networks:
+      - weezam-net
+
+  weezam-user:
+    container_name: weezam-user
+    hostname: weezam-user
+    build:
+      context: weezam-user
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    links:
+      - weezam-registry
+    depends_on:
+      - weezam-registry
+    networks:
+      - weezam-net
+
+  weezam-withdrawal:
+    container_name: weezam-withdrawal
+    hostname: weezam-withdrawal
+    build:
+      context: weezam-withdrawal
+      dockerfile: Dockerfile
+    ports:
+      - 8082:8082
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    links:
+      - weezam-registry
+      - weezam-rabbit
+    depends_on:
+      - weezam-registry
+      - weezam-rabbit
+    networks:
+      - weezam-net
+
+  weezam-notificatons:
+    container_name: weezam-notifications
+    hostname: weezam-notifications
+    build:
+      context: weezam-notifications
+      dockerfile: Dockerfile
+    ports:
+      - 8083:8083
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 200
+    links:
+      - weezam-registry
+      - weezam-rabbit
+    depends_on:
+      - weezam-registry
+      - weezam-rabbit
+    networks:
+      - weezam-net
+
+networks:
+  weezam-net:
+    driver: bridge
