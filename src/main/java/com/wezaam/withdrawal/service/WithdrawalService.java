@@ -1,104 +1,92 @@
 package com.wezaam.withdrawal.service;
 
+import com.wezaam.withdrawal.exception.ForbiddenException;
+import com.wezaam.withdrawal.exception.NotFoundException;
 import com.wezaam.withdrawal.exception.TransactionException;
-import com.wezaam.withdrawal.model.PaymentMethod;
+import com.wezaam.withdrawal.model.User;
 import com.wezaam.withdrawal.model.Withdrawal;
-import com.wezaam.withdrawal.model.WithdrawalScheduled;
-import com.wezaam.withdrawal.model.WithdrawalStatus;
-import com.wezaam.withdrawal.repository.PaymentMethodRepository;
+import com.wezaam.withdrawal.model.PaymentMethod;
+import com.wezaam.withdrawal.model.enums.WithdrawalStatus;
 import com.wezaam.withdrawal.repository.WithdrawalRepository;
-import com.wezaam.withdrawal.repository.WithdrawalScheduledRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Optional;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Service
+@RequiredArgsConstructor
 public class WithdrawalService {
 
-    @Autowired
-    private WithdrawalRepository withdrawalRepository;
-    @Autowired
-    private WithdrawalScheduledRepository withdrawalScheduledRepository;
-    @Autowired
-    private WithdrawalProcessingService withdrawalProcessingService;
-    @Autowired
-    private PaymentMethodRepository paymentMethodRepository;
-    @Autowired
-    private EventsService eventsService;
+    private final WithdrawalRepository withdrawalRepository;
+    private final WithdrawalProcessingService withdrawalProcessingService;
+    private final PaymentMethodService paymentMethodService;
+    private final EventsService eventsService;
+    private final UserService userService;
+    private final ExecutorService executorService;
 
-    private final ExecutorService executorService = Executors.newCachedThreadPool();
+    public Withdrawal create(Long userId, Long paymentMethodId, Double amount, String executeAt) {
+        User user = userService.findById(userId);
+        if (amount > user.getMaxWithdrawalAmount()) {
+            throw new ForbiddenException("Max withdrawal amount of " + user.getMaxWithdrawalAmount() + " exceeded");
+        }
+        PaymentMethod paymentMethod = paymentMethodService.findById(paymentMethodId);
+        if (user.getPaymentMethods().stream()
+                .map(PaymentMethod::getId)
+                .noneMatch(id -> id.equals(paymentMethod.getId()))) {
+            throw new ForbiddenException("User does not have payment method " + paymentMethod.getName());
+        }
 
-    public void create(Withdrawal withdrawal) {
-        Withdrawal pendingWithdrawal = withdrawalRepository.save(withdrawal);
-
-        executorService.submit(() -> {
-            Optional<Withdrawal> savedWithdrawalOptional = withdrawalRepository.findById(pendingWithdrawal.getId());
-
-            PaymentMethod paymentMethod;
-            if (savedWithdrawalOptional.isPresent()) {
-                paymentMethod = paymentMethodRepository.findById(savedWithdrawalOptional.get().getPaymentMethodId()).orElse(null);
-            } else {
-                paymentMethod = null;
-            }
-
-            if (savedWithdrawalOptional.isPresent() && paymentMethod != null) {
-                Withdrawal savedWithdrawal = savedWithdrawalOptional.get();
-                try {
-                    var transactionId = withdrawalProcessingService.sendToProcessing(withdrawal.getAmount(), paymentMethod);
-                    savedWithdrawal.setStatus(WithdrawalStatus.PROCESSING);
-                    savedWithdrawal.setTransactionId(transactionId);
-                    withdrawalRepository.save(savedWithdrawal);
-                    eventsService.send(savedWithdrawal);
-                } catch (Exception e) {
-                    if (e instanceof TransactionException) {
-                        savedWithdrawal.setStatus(WithdrawalStatus.FAILED);
-                        withdrawalRepository.save(savedWithdrawal);
-                        eventsService.send(savedWithdrawal);
-                    } else {
-                        savedWithdrawal.setStatus(WithdrawalStatus.INTERNAL_ERROR);
-                        withdrawalRepository.save(savedWithdrawal);
-                        eventsService.send(savedWithdrawal);
-                    }
-                }
-            }
-        });
-    }
-
-    public void schedule(WithdrawalScheduled withdrawalScheduled) {
-        withdrawalScheduledRepository.save(withdrawalScheduled);
+        Withdrawal withdrawal = new Withdrawal();
+        withdrawal.setUserId(userId);
+        withdrawal.setPaymentMethodId(paymentMethodId);
+        withdrawal.setAmount(amount);
+        withdrawal.setCreatedAt(Instant.now());
+        if (executeAt.equals("ASAP")) {
+            withdrawal.setExecuteAt(Instant.now());
+            processAsync(withdrawal);
+        } else {
+            withdrawal.setStatus(WithdrawalStatus.PENDING);
+            withdrawal.setExecuteAt(Instant.parse(executeAt));
+            withdrawalRepository.save(withdrawal);
+        }
+        return findById(withdrawal.getId());
     }
 
     @Scheduled(fixedDelay = 5000)
     public void run() {
-        withdrawalScheduledRepository.findAllByExecuteAtBefore(Instant.now())
-                .forEach(this::processScheduled);
+        withdrawalRepository.findAllByExecuteAtBeforeAndStatus(Instant.now(), WithdrawalStatus.PENDING)
+                .forEach(this::processAsync);
     }
 
-    private void processScheduled(WithdrawalScheduled withdrawal) {
-        PaymentMethod paymentMethod = paymentMethodRepository.findById(withdrawal.getPaymentMethodId()).orElse(null);
-        if (paymentMethod != null) {
-            try {
-                var transactionId = withdrawalProcessingService.sendToProcessing(withdrawal.getAmount(), paymentMethod);
-                withdrawal.setStatus(WithdrawalStatus.PROCESSING);
-                withdrawal.setTransactionId(transactionId);
-                withdrawalScheduledRepository.save(withdrawal);
-                eventsService.send(withdrawal);
-            } catch (Exception e) {
-                if (e instanceof TransactionException) {
-                    withdrawal.setStatus(WithdrawalStatus.FAILED);
-                    withdrawalScheduledRepository.save(withdrawal);
-                    eventsService.send(withdrawal);
-                } else {
-                    withdrawal.setStatus(WithdrawalStatus.INTERNAL_ERROR);
-                    withdrawalScheduledRepository.save(withdrawal);
-                    eventsService.send(withdrawal);
-                }
-            }
+    public void processAsync(Withdrawal withdrawal) {
+        executorService.submit(() -> process(withdrawal));
+    }
+
+    protected void process(Withdrawal withdrawal) {
+        try {
+            withdrawal.setStatus(WithdrawalStatus.PROCESSING);
+            withdrawalRepository.save(withdrawal);
+            PaymentMethod paymentMethod = paymentMethodService.findById(withdrawal.getPaymentMethodId());
+            withdrawal.setTransactionId(withdrawalProcessingService.sendToProcessing(withdrawal.getAmount(), paymentMethod));
+        } catch (TransactionException transactionException) {
+            withdrawal.setStatus(WithdrawalStatus.FAILED);
+        } catch (Exception exception) {
+            withdrawal.setStatus(WithdrawalStatus.INTERNAL_ERROR);
+        } finally {
+            withdrawalRepository.save(withdrawal);
+            eventsService.send(withdrawal);
         }
+    }
+
+    public List<Withdrawal> findAll() {
+        return withdrawalRepository.findAll();
+    }
+
+    public Withdrawal findById(Long withdrawalId) {
+        return withdrawalRepository.findById(withdrawalId)
+                .orElseThrow(() -> new NotFoundException("Withdrawal not found for the id:" + withdrawalId));
     }
 }
