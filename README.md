@@ -22,7 +22,7 @@ Assume we have an extensive legacy system and one of the parts is withdrawal pro
 - Fork the repository (in case you want to refactor the existing solution). Or you can create the project from scratch
 - Implement your nice solution
 - If you need to put comments/description regarding the solution please write them in `SOLUTION.md`  
-- Once complete invite `maksim-wezaam` and `pbravowezaam` for review
+- Once complete invite `makcon` and `pbravowezaam` for review
 
 ###### As a bonus please describe (or implement a solution) how to solve the problem:
 
