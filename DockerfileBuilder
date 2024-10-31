@@ -1,0 +1,36 @@
+# Build stage
+FROM maven:3.9.6-eclipse-temurin-21 AS build
+
+# Set work directory for the build context
+WORKDIR /wezaam-challenge-be
+
+# Copy the Maven configuration file first to leverage Docker layer caching
+COPY pom.xml .
+
+# Download dependencies (caching layer)
+RUN mvn dependency:go-offline
+
+# Copy the source code into the container
+COPY src /wezaam-challenge-be/src
+
+# Build the project
+RUN mvn clean package
+
+# Build the project skipping mutation test
+#RUN mvn clean package -DskipPitest
+
+# Runtime stage
+FROM openjdk:21-jdk-slim AS runtime
+
+# Set a non-root user for security
+RUN useradd -ms /bin/bash appuser
+USER appuser
+
+# Copy the built JAR file from the build stage
+COPY --from=build /wezaam-challenge-be/target/wezaam-challenge-be-1.0.0.jar /app/app.jar
+
+# Expose the application port
+EXPOSE 7070
+
+# Run the application
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app/app.jar"]

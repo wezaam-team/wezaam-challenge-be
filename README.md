@@ -2,7 +2,7 @@
 
 Assume we have an extensive legacy system and one of the parts is withdrawal processing (the process that allows to transfer money from company to employee accounts). Now we have a chance to completely rewrite the system, including API change (endpoints, DTOs etc). As a technical challenge, we suggest you to take it. You can do whatever you want following the acceptance criteria:
 
-- Use any architecture you are comfortable with 
+- Use any architecture you are comfortable with
 - Use modern Java or Kotlin (we use Kotlin for new code)
 - Use Spring boot
 - Use any database SQL/NoSQL (please use embedded)
@@ -15,13 +15,13 @@ Assume we have an extensive legacy system and one of the parts is withdrawal pro
 - A user has several payment methods
 - A user can execute a withdrawal request using one of his payment methods
 - A withdrawal can be executed as soon as possible (note: it doesn't mean immediately) or scheduled to be executed later
-- After the service receives a request it stores a withdrawal object in our DB and sends a transaction request to a payment provider async. Note: for this task, we don't care about a transaction completion  
+- After the service receives a request it stores a withdrawal object in our DB and sends a transaction request to a payment provider async. Note: for this task, we don't care about a transaction completion
 
 #### Steps to proceed:
 
 - Fork the repository (in case you want to refactor the existing solution). Or you can create the project from scratch
 - Implement your nice solution
-- If you need to put comments/description regarding the solution please write them in `SOLUTION.md`  
+- If you need to put comments/description regarding the solution please write them in `SOLUTION.md`
 - Once complete invite `makcon` and `pbravowezaam` for review
 
 ###### As a bonus please describe (or implement a solution) how to solve the problem:
