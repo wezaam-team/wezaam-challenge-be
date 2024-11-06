@@ -4,7 +4,6 @@ Assume we have an extensive legacy system and one of the parts is withdrawal pro
 
 - Use any architecture you are comfortable with 
 - Use modern Java or Kotlin (we use Kotlin for new code)
-- Use Spring boot
 - Use any database SQL/NoSQL (please use embedded)
 - The code must be tested. We don't expect 100% coverage for this challenge, we want to see that you can write sensible tests. For example, if you have several similar converters, there is no need to test every single class/method, just enough to test one. But for critical logic like the withdrawal process we'd like to see coverage of different scenarios
 - We expect to see SOLID principles in action
@@ -15,7 +14,11 @@ Assume we have an extensive legacy system and one of the parts is withdrawal pro
 - A user has several payment methods
 - A user can execute a withdrawal request using one of his payment methods
 - A withdrawal can be executed as soon as possible (note: it doesn't mean immediately) or scheduled to be executed later
-- After the service receives a request it stores a withdrawal object in our DB and sends a transaction request to a payment provider async. Note: for this task, we don't care about a transaction completion  
+- After the service receives a request it should:
+  - Store a withdrawal object in a DB in pending status
+  - Send an event to a queue (please just emulate it, don't use a real queue like Kafka, Rabbit)
+  - Send a transaction request to a payment provider async. Note: for this task, we don't care about transaction completion
+  - Return the pending withdrawal
 
 #### Steps to proceed:
 
